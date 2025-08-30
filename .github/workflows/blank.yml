@@ -1,0 +1,36 @@
+name: fdc
+
+on:
+  schedule:
+    - cron: "*/6 * * * *" 
+  workflow_dispatch:
+
+jobs:
+  export-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download
+        shell: bash
+        run: |
+          curl -L -o fdc.zip "${{ secrets.FDC }}"
+          if [ ! -f "fdc.zip" ]; then
+            echo "Download failed: fdc.zip not found."
+            exit 1
+          fi
+
+      - name: Unzip
+        shell: bash
+        run: |
+          unzip fdc.zip
+          rm fdc.zip
+
+      - name: Run
+        shell: bash
+        run: |
+          chmod +x ./fdc.sh
+          ./fdc.sh
